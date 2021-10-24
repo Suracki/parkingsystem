@@ -59,13 +59,59 @@
             <artifactId>maven-assembly-plugin</artifactId>
             <version>3.0.0</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
-    <build>
+    <reporting>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.1.2</version>
+                <!--                <configuration>-->
+                <!--                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>-->
+                <!--                </configuration>-->
+            </plugin>
+        </plugins>
+    </reporting>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.7.1</version>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-project-info-reports-plugin</artifactId>
+                <version>3.1.2</version>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>resources</goal>
+                            <goal>testResources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <version>3.0.0</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -81,7 +127,8 @@
                                 </manifest>
                             </archive>
                             <descriptorRefs>
-                                <descriptorRef>executable-jar-with-dependencies</descriptorRef>
+<!--                                <descriptorRef>executable-jar-with-dependencies</descriptorRef>-->
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
                         </configuration>
                     </execution>
@@ -98,11 +145,11 @@
                         <version>1.2.0</version>
                     </dependency>
                 </dependencies>
-                <configuration>
-                    <excludes>
-                        <exclude>**/*IT.java</exclude>
-                    </excludes>
-                </configuration>
+                <!--                <configuration>-->
+                <!--                    <excludes>-->
+                <!--                        <exclude>**/*IT.java</exclude>-->
+                <!--                    </excludes>-->
+                <!--                </configuration>-->
                 <executions>
                     <execution>
                         <id>integration-test</id>
@@ -125,6 +172,12 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.5</version>
+                <!--                <configuration>-->
+                <!--                    <includes>-->
+                <!--                        <include>**/*IT.java</include>-->
+                <!--                        <include>**/*Test.java</include>-->
+                <!--                    </includes>-->
+                <!--                </configuration>-->
                 <executions>
                     <execution>
                         <goals>
