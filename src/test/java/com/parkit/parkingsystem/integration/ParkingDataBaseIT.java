@@ -17,7 +17,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Clock;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -62,20 +65,30 @@ public class ParkingDataBaseIT {
     @Test
     public void testParkingACar(){
 
-        System.out.println("INT TEST 1");
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
 
+        // Get the next available slot number from the database
         int nextAvailableSlotBefore = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
+
+        // Check the database for an existing ticket for this vehicle
+        // There should not be one yet, so this should be null
         Ticket ticketBefore = ticketDAO.getTicket("ABCDEF");
+
+        // Process the vehicle
+        // This should cause the next available slot number to change, and a ticket to be created
         parkingService.processIncomingVehicle();
+
+        // Get the next available slot number from the database again, it should be different now
         int nextAvailableSlotAfter = parkingSpotDAO.getNextAvailableSlot(ParkingType.CAR);
 
+        // Check the database again for this vehicle's ticket
+        // It should now exist
         Ticket ticketAfter = ticketDAO.getTicket("ABCDEF");
 
         // Check that Parking table is updated by confirming next available slot has changed
         assertNotEquals(nextAvailableSlotAfter, nextAvailableSlotBefore);
         // Check that ticket has been created by confirming ticket exists for test registration number
-        // Also confirm that it did not exist prior to running test
+        // Also confirm that it did not exist prior to running test, so we can be certain it was created by our test
         assertNull(ticketBefore);
         assertNotNull(ticketAfter);
     }
@@ -83,33 +96,26 @@ public class ParkingDataBaseIT {
     @Test
     public void testParkingLotExit(){
 
-        System.out.println("INT TEST 2");
+        // Create our ParkingService, and park a vehicle so that we are ready to test its exit
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
         parkingService.processIncomingVehicle();
-        try {
-            Thread.sleep(20);
-        }
-        catch (Exception e) {
 
-        }
+        // Get the parked vehicle's ticket from the database
+        Ticket ticketBefore = ticketDAO.getTicket("ABCDEF");
+
+        // Update the ticket, setting the inTime to 2 hours ago for testing purposes
+        ticketBefore.setInTime(LocalDateTime.now().minusHours(2));
+        ticketDAO.saveTicket(ticketBefore);
+
+        // Process the vehicle exit, and get the updated ticket from the database
         parkingService.processExitingVehicle();
-
-        double price = 999;
-
-        LocalDateTime outTime = null;
-
-        Ticket ticket = ticketDAO.getTicket("ABCDEF");
-
-
-
-        price = ticket.getPrice();
-        outTime = ticket.getOutTime();
-
+        Ticket ticketAfter = ticketDAO.getTicket("ABCDEF");
 
         // Check that fare has been generated and stored in the database
-        assertNotEquals(price, 999);
-        // Check that ticket has an out time stored
-        assertNotNull(outTime);
+        // by comparing the ticket's price before and after processing
+        assertNotEquals(ticketAfter.getPrice(), ticketBefore.getPrice());
+        // Check that ticket now has an out time stored
+        assertNotNull(ticketAfter.getOutTime());
     }
 
 }
