@@ -30,7 +30,6 @@ public class ParkingService {
 
     public void processIncomingVehicle() {
         try{
-            System.out.println("TEST");
             ParkingSpot parkingSpot = getNextParkingNumberIfAvailable();
             if(parkingSpot !=null && parkingSpot.getId() > 0){
                 String vehicleRegNumber = getVehichleRegNumber();
@@ -50,7 +49,9 @@ public class ParkingService {
                 //Once ticket created, add total count of visits for this vehicle (current visit inclusive)
                 ticket.setVisits(ticketDAO.getVisits(vehicleRegNumber));
 
-                System.out.println("This will be your visit number: " + ticket.getVisits());
+                if (ticket.getVisits() > 1) {
+                    System.out.println("Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount.");
+                }
                 System.out.println("Generated Ticket and saved in DB");
                 System.out.println("Please park your vehicle in spot number:"+parkingSpot.getId());
                 System.out.println("Recorded in-time for vehicle number:"+vehicleRegNumber+" is:"+inTime);

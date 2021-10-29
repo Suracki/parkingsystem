@@ -31,7 +31,6 @@ public class TicketDAO {
             ps.setDouble(3, ticket.getPrice());
             ps.setTimestamp(4, Timestamp.valueOf(ticket.getInTime()));
             ps.setTimestamp(5, (ticket.getOutTime() == null)?null: (Timestamp.valueOf(ticket.getOutTime())));
-            System.out.println("TEST WORKING?");
             return ps.execute();
 
         }catch (Exception ex){
@@ -45,7 +44,7 @@ public class TicketDAO {
     public int getVisits(String vehicleRegNumber) {
         Connection con = null;
         Ticket ticket = null;
-        int out = 99;
+        int out = 0;
         try {
             con = dataBaseConfig.getConnection();
             PreparedStatement ps = con.prepareStatement(DBConstants.GET_REPEAT);
@@ -55,7 +54,6 @@ public class TicketDAO {
             if(rs.next()){
                 out = rs.getInt(1);
             }
-            System.out.println("Out: " + out);
             dataBaseConfig.closeResultSet(rs);
             dataBaseConfig.closePreparedStatement(ps);
         }catch (Exception ex){
