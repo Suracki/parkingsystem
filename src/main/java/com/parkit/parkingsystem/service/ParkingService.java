@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 public class ParkingService {
 
@@ -49,6 +48,7 @@ public class ParkingService {
                 //Once ticket created, add total count of visits for this vehicle (current visit inclusive)
                 ticket.setVisits(ticketDAO.getVisits(vehicleRegNumber));
 
+                //If this is a repeat visitor, send an extra message
                 if (ticket.getVisits() > 1) {
                     System.out.println("Welcome back! As a recurring user of our parking lot, you'll benefit from a 5% discount.");
                 }
